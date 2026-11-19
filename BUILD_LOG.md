@@ -24,9 +24,12 @@ Recorded at Phase 0 on 2026-11-19.
 
 | Start | End | Phase | Model | Delegated task | Outcome |
 | --- | --- | --- | --- | --- | --- |
-| 2026-11-19 20:12 | | 0, 1 | Claude Opus 5.5 | Scaffold; sample service and invariant harness | |
+| 2026-11-19 20:12 | | 0, 1 | Claude Opus 5.5 | Scaffold; sample service and invariant harness | STOP H1 reached |
 
 ## What went wrong (agent-maintained, factual: failed approaches, rework, wrong assumptions)
+
+- Phase 1: the plan's stub shape (`t.Skip` in each check) does not work inside `rapid.Check`; rapid treats a skip as an invalid case and fails after too many. Fixed with a probe on the outer test (see PROGRESS).
+- Phase 0: denying edits on all protected paths at once would have blocked the delegated work that creates them. Deny rules are added per path when it becomes human-owned.
 
 ## Plan provenance
 
