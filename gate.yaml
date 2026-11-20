@@ -1,0 +1,61 @@
+# gate.yaml: the gate's rules. Owner: Olin. Read from --base, never from the change under test.
+version: 1
+
+# Paths a change may not touch. Touching one escalates to a human.
+protected_paths:
+  - sample/orders/invariants/**
+  - gate.yaml
+  - AGENTS.md
+  - CLAUDE.md
+  - .claude/**
+  - prompts/**
+  - cmd/gate/**
+  - internal/**
+  - evals/**
+  - .github/**
+
+# Tiers, first match wins. Tier 2 needs a spec with plan_approved_by filled in.
+tiers:
+  - tier: 2
+    paths: [sample/orders/**]
+  - tier: 0
+    paths: ["*.md", docs/**]
+default_tier: 1
+
+budget:
+  max_changed_lines: 200   # added + deleted lines in non-test files
+  max_files: 8
+
+max_attempts: 3
+
+# A check is listed here only once it exists. Listed and required means it must run.
+checks:
+  build:
+    required: true
+    timeout_seconds: 300
+  invariants:
+    required: true
+    package: ./sample/orders/invariants/
+    checks: 200
+    seed: 1
+    timeout_seconds: 120
+  budget:
+    required: true
+
+# Model endpoints: only the names of environment variables live here.
+endpoints:
+  spark: { base_url_env: FACTORY_SPARK_URL, headers_env: FACTORY_SPARK_HEADERS }
+  l40s:  { base_url_env: FACTORY_L40S_URL,  headers_env: FACTORY_L40S_HEADERS }
+
+roles:
+  implementer:
+    kind: completion          # or: command
+    endpoint: spark
+    model: ""                 # Olin fills in
+    ladder: []                # optional: one model id per attempt, weakest first
+    context: spec-only
+    timeout_seconds: 180
+  test_author:
+    kind: completion
+    endpoint: l40s
+    model: ""                 # a different model from the implementer
