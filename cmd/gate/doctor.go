@@ -20,6 +20,7 @@ import (
 func cmdDoctor(args []string) int {
 	fs := flag.NewFlagSet("doctor", flag.ExitOnError)
 	base := fs.String("base", "HEAD", "read gate.yaml from this ref")
+	only := fs.String("role", "", "check only this role")
 	_ = fs.Parse(args)
 	repo, err := repoRoot()
 	if err != nil {
@@ -35,7 +36,12 @@ func cmdDoctor(args []string) int {
 	}
 	names := make([]string, 0, len(cfg.Roles))
 	for n := range cfg.Roles {
-		names = append(names, n)
+		if *only == "" || n == *only {
+			names = append(names, n)
+		}
+	}
+	if len(names) == 0 {
+		return fail(fmt.Errorf("no role %q in gate.yaml", *only))
 	}
 	sort.Strings(names)
 	bad := 0
