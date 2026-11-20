@@ -1,0 +1,50 @@
+{
+  "loop_id": "l-0005",
+  "spec": "specs/partial-fills.md",
+  "context": "spec-only",
+  "source": "live",
+  "endpoint": "l40s",
+  "base": "388d14e0ff998915794079bc681f1f85f605ae60",
+  "attempts": [
+    {
+      "n": 1,
+      "model": "qwen3-coder",
+      "outcome": "FAIL",
+      "reason": "blocking checks failed: invariants",
+      "run_id": "r-0007",
+      "branch": "loop/l-0005/attempt-1",
+      "head": "6d30db3bb0a57be5069f7773f3c6707431ca8577",
+      "tokens_in": 3483,
+      "tokens_out": 2373,
+      "seconds": 17.870627542,
+      "calls": 1
+    },
+    {
+      "n": 2,
+      "model": "qwen3-coder",
+      "outcome": "FAIL",
+      "reason": "blocking checks failed: build, invariants",
+      "run_id": "r-0008",
+      "branch": "loop/l-0005/attempt-2",
+      "head": "350228a6d031fc97bc5e4c6ae0b75d7efda06fe3",
+      "tokens_in": 4206,
+      "tokens_out": 2683,
+      "seconds": 21.244999458,
+      "calls": 1
+    },
+    {
+      "n": 3,
+      "model": "qwen3-coder",
+      "outcome": "ESCALATE",
+      "reason": "blocking checks failed (build, invariants) on attempt 3 of 3",
+      "run_id": "r-0009",
+      "branch": "loop/l-0005/attempt-3",
+      "head": "ae57e132bb9cc813ea692dcda1b00c7ca20a9842",
+      "tokens_in": 4617,
+      "tokens_out": 919,
+      "seconds": 7.014739916,
+      "calls": 1
+    }
+  ],
+  "final": "ESCALATE"
+}

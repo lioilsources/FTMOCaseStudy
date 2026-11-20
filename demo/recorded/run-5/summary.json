@@ -1,0 +1,44 @@
+{
+  "loop_id": "l-0006",
+  "spec": "specs/partial-fills.md",
+  "context": "spec-only",
+  "source": "live",
+  "endpoint": "l40s",
+  "base": "388d14e0ff998915794079bc681f1f85f605ae60",
+  "attempts": [
+    {
+      "n": 1,
+      "model": "qwen3-coder",
+      "outcome": "FAIL",
+      "reason": "blocking checks failed: build, invariants",
+      "run_id": "r-0010",
+      "branch": "loop/l-0006/attempt-1",
+      "head": "e5086641c938e2490d6aabcf8b316c5f0ca4e585",
+      "tokens_in": 3483,
+      "tokens_out": 2306,
+      "seconds": 17.666287167,
+      "calls": 1
+    },
+    {
+      "n": 2,
+      "model": "qwen3-coder",
+      "outcome": "agent_error",
+      "reason": "the reply changed nothing",
+      "tokens_in": 4217,
+      "tokens_out": 890,
+      "seconds": 6.888726042,
+      "calls": 1
+    },
+    {
+      "n": 3,
+      "model": "qwen3-coder",
+      "outcome": "agent_error",
+      "reason": "the reply changed nothing",
+      "tokens_in": 3581,
+      "tokens_out": 890,
+      "seconds": 6.64992775,
+      "calls": 1
+    }
+  ],
+  "final": "agent_error"
+}
