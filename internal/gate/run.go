@@ -146,7 +146,7 @@ func Run(o RunOptions) (*RunResult, error) {
 }
 
 // runChecks checks head out into a worktree, overlays protected paths from base and runs
-// every configured check. Only a failed build stops the later code checks.
+// every configured check. Only a failed compile stops the later code checks.
 func runChecks(g Git, cfg *Config, spec *Spec, base, head, runID string, changes []FileChange) ([]CheckResult, error) {
 	wt := filepath.Join(FactoryDir(g.Dir), "worktrees", runID)
 	if err := g.AddWorktree(wt, head); err != nil {
@@ -158,14 +158,14 @@ func runChecks(g Git, cfg *Config, spec *Spec, base, head, runID string, changes
 	}
 
 	var out []CheckResult
-	buildOK := true
+	compiled := true
 	if cfg.Checks.Build != nil {
-		r := runBuild(wt, cfg)
-		buildOK = r.Status == StatusPass
+		var r CheckResult
+		r, compiled = runBuild(wt, cfg)
 		out = append(out, r)
 	}
 	if c := cfg.Checks.Invariants; c != nil {
-		if buildOK {
+		if compiled {
 			out = append(out, runInvariants(wt, cfg))
 		} else {
 			out = append(out, CheckResult{ID: "invariants", Required: c.Required, Blocking: true, Status: StatusNotRun, Key: "build failed"})

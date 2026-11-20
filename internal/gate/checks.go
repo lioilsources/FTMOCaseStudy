@@ -81,9 +81,10 @@ func timeoutOf(c *CheckConfig, fallback int) time.Duration {
 }
 
 // runBuild runs go build, go vet and the existing unit tests, except the invariants package.
-func runBuild(dir string, cfg *Config) CheckResult {
+// compiled is false when go build or go vet did not succeed; failing unit tests still compile.
+func runBuild(dir string, cfg *Config) (r CheckResult, compiled bool) {
 	c := cfg.Checks.Build
-	r := CheckResult{ID: "build", Required: c.Required, Blocking: true}
+	r = CheckResult{ID: "build", Required: c.Required, Blocking: true}
 	start := time.Now()
 	defer func() { r.Ms = time.Since(start).Milliseconds() }()
 	timeout := timeoutOf(c, 300)
@@ -94,18 +95,18 @@ func runBuild(dir string, cfg *Config) CheckResult {
 		fmt.Fprintf(&log, "$ go %s\n%s\n", strings.Join(step, " "), res.out)
 		if bad := badRun(&r, res, "go "+step[0]); bad {
 			r.Log = log.String()
-			return r
+			return r, false
 		}
 		if res.exitCode != 0 {
 			r.Status, r.Key, r.Detail, r.Log = StatusFail, "go "+step[0]+" failed", capLines(res.out), log.String()
-			return r
+			return r, false
 		}
 	}
 
 	list := runCmd(dir, timeout, "go", "list", "./...")
 	if badRun(&r, list, "go list") || list.exitCode != 0 {
 		r.Status, r.Key, r.Log = StatusInconclusive, "go list failed", list.out
-		return r
+		return r, true
 	}
 	inv := ""
 	if cfg.Checks.Invariants != nil {
@@ -121,15 +122,15 @@ func runBuild(dir string, cfg *Config) CheckResult {
 	fmt.Fprintf(&log, "$ go %s\n%s\n", strings.Join(args, " "), res.out)
 	r.Log = log.String()
 	if badRun(&r, res, "go test") {
-		return r
+		return r, true
 	}
 	failing := failLines(res.out)
 	if res.exitCode != 0 {
 		r.Status, r.Key, r.Detail = StatusFail, fmt.Sprintf("%d failing", len(failing)), capLines(strings.Join(failing, "\n")+"\n\n"+res.out)
-		return r
+		return r, true
 	}
 	r.Status, r.Key = StatusPass, "build, vet, unit tests ok"
-	return r
+	return r, true
 }
 
 // badRun marks r inconclusive when the command timed out or could not start.
