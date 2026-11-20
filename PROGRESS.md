@@ -42,7 +42,7 @@
 
 ## Open questions for Olin
 
-- STOP H3: run `make demo` and `make demo-live` yourself. `demo-live` needs the L40S coder: open the forward (`ssh -N -L 18003:127.0.0.1:8003 tcloud`) inside a qctl window. It has not been run end to end yet (done criterion open).
+- STOP H3: run `make demo` and `make demo-live` yourself. `demo-live` needs the L40S coder: open the SSH forward to its port inside a qctl window. It has not been run end to end yet (done criterion open).
 - No live run reached PASS: `qwen3-coder` (spec-only) fails idempotency on attempt 1 in all five valid runs and does not fix it with the counterexample in hand; it often returns the same files (agent_error). A result to show; Phase 7's `spec+invariants` cell will say whether context helps.
 - Test author is on SPARK (`bench-qwen36`): Phase 6 needs `FACTORY_SPARK_HEADERS` (`Authorization: Bearer <LITELLM_MASTER_KEY>`) in `.env` and a `sparkctl` lease on `qwen36` (Director's advice). The model id in LiteLLM is `bench-qwen36`, already in `gate.yaml`.
 - `gitleaks` and `govulncheck` are not installed; Phase 5 needs them (install is your call).
