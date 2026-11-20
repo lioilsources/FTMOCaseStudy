@@ -126,7 +126,7 @@ func runBuild(dir string, cfg *Config) (r CheckResult, compiled bool) {
 	}
 	failing := failLines(res.out)
 	if res.exitCode != 0 {
-		r.Status, r.Key, r.Detail = StatusFail, fmt.Sprintf("%d failing", len(failing)), capLines(strings.Join(failing, "\n")+"\n\n"+res.out)
+		r.Status, r.Key, r.Detail = StatusFail, fmt.Sprintf("%d failing", len(failing)), capLines(failingOutput(res.out))
 		return r, true
 	}
 	r.Status, r.Key = StatusPass, "build, vet, unit tests ok"
@@ -160,9 +160,9 @@ func failLines(out string) []string {
 
 // runInvariants runs the property tests (already overlaid from base) with a fixed number
 // of checks and seed. The failing output is captured verbatim, not parsed.
-func runInvariants(dir string, cfg *Config) CheckResult {
+func runInvariants(dir string, cfg *Config) (r CheckResult) {
 	c := cfg.Checks.Invariants
-	r := CheckResult{ID: "invariants", Required: c.Required, Blocking: true}
+	r = CheckResult{ID: "invariants", Required: c.Required, Blocking: true}
 	start := time.Now()
 	defer func() { r.Ms = time.Since(start).Milliseconds() }()
 	args := []string{"test", "-count=1", "-v", c.Package,
@@ -188,17 +188,30 @@ func runInvariants(dir string, cfg *Config) CheckResult {
 	return r
 }
 
-// failBlock returns the output from the first "--- FAIL" line up to the final FAIL line.
+// failBlock returns the verbose test output from the first "=== RUN" line through the
+// last "--- FAIL" line: the shrunk counterexample, as the tool printed it.
 func failBlock(out string) string {
-	i := strings.Index(out, "--- FAIL")
-	if i < 0 {
-		return out
+	if i := strings.Index(out, "=== RUN"); i >= 0 {
+		out = out[i:]
 	}
-	block := out[i:]
-	if j := strings.Index(block, "\nFAIL"); j >= 0 {
-		block = block[:j]
+	if j := strings.LastIndex(out, "--- FAIL"); j >= 0 {
+		if k := strings.Index(out[j:], "\n"); k >= 0 {
+			return out[:j+k]
+		}
 	}
-	return block
+	return out
+}
+
+// failingOutput drops the "ok" and "no test files" lines of go test output.
+func failingOutput(out string) string {
+	var keep []string
+	for _, l := range strings.Split(out, "\n") {
+		if strings.HasPrefix(l, "ok  \t") || strings.HasPrefix(l, "?   \t") {
+			continue
+		}
+		keep = append(keep, l)
+	}
+	return strings.Join(keep, "\n")
 }
 
 // runBudget compares the size of the change with the budget and the spec's scope.
