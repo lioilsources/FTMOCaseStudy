@@ -15,3 +15,13 @@ Fixed on 2026-11-20, before any live run, and committed before the first one.
    ends in ESCALATE, or five first-attempt passes, is a result to show, not to hide.
 5. Runs that fail for infrastructure reasons (endpoint down, timeout before any reply) are
    kept and listed too; they are not replaced.
+
+## Amendment, 2026-11-20, after run-1 and before run-2 (decided by Olin)
+
+`run-1` ended in ESCALATE because the build check timed out (300 s): it ran the gate's own
+end-to-end tests, which build fixture repositories. That is an infrastructure failure, so by
+rule 5 `run-1` is kept and listed, with its gate version. The build check now runs unit
+tests with `-short`, which skips only those end-to-end tests (protected, always from base).
+Five more runs, `run-2` to `run-6`, are made with the fixed gate and the same prompt, spec
+and `gate.yaml`. Rule 4 picks the default from all runs in order. `run-2` was started once
+before the fix and stopped before the model replied; nothing was recorded for it.

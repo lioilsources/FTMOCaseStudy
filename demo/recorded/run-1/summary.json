@@ -1,0 +1,24 @@
+{
+  "loop_id": "l-0001",
+  "spec": "specs/partial-fills.md",
+  "context": "spec-only",
+  "source": "live",
+  "endpoint": "l40s",
+  "base": "48c1afd77a23ad4fd4c6cc1b9e52639f52ddbb31",
+  "attempts": [
+    {
+      "n": 1,
+      "model": "qwen3-coder",
+      "outcome": "ESCALATE",
+      "reason": "required checks could not reach a result: build",
+      "run_id": "r-0004",
+      "branch": "loop/l-0001/attempt-1",
+      "head": "79b6f097e4552a73d765cf4667fc603773445f71",
+      "tokens_in": 3483,
+      "tokens_out": 2373,
+      "seconds": 17.84718825,
+      "calls": 1
+    }
+  ],
+  "final": "ESCALATE"
+}

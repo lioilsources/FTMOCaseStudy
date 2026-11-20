@@ -22,6 +22,7 @@ const usageText = `usage:
   gate run    --base <ref> --head <ref> [--spec <file>] [--mode blocking|advisory] [--attempt N] [--requested-by <name>]
   gate loop   --spec <file> --base <ref> [--max-attempts N] [--context spec-only|spec+invariants] [--record <dir> | --replay <dir>] [--stream]
   gate doctor
+  gate runs   [--dir demo/recorded]
   gate version`
 
 func main() {
@@ -37,6 +38,8 @@ func main() {
 		os.Exit(cmdLoop(args))
 	case "doctor":
 		os.Exit(cmdDoctor(args))
+	case "runs":
+		os.Exit(cmdRuns(args))
 	case "version":
 		fmt.Println(gate.Version())
 	default:

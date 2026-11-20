@@ -112,7 +112,9 @@ func runBuild(dir string, cfg *Config) (r CheckResult, compiled bool) {
 	if cfg.Checks.Invariants != nil {
 		inv = path.Clean(cfg.Checks.Invariants.Package)
 	}
-	args := []string{"test", "-count=1"}
+	// -short skips the gate's own end-to-end tests: they live in protected paths, always
+	// run from base, and cannot say anything about the change under test.
+	args := []string{"test", "-count=1", "-short"}
 	for _, pkg := range strings.Fields(list.out) {
 		if inv == "" || !strings.HasSuffix(pkg, "/"+inv) {
 			args = append(args, pkg)
