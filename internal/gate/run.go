@@ -76,11 +76,17 @@ func Run(o RunOptions) (*RunResult, error) {
 		}
 	}
 
-	changes, err := g.Diff(base, head)
+	// The change is what head adds since it forked from base, as in a pull request.
+	// Commits that landed on base after the fork are not part of it.
+	fork, err := g.MergeBase(base, head)
 	if err != nil {
 		return nil, err
 	}
-	hunks, err := g.Hunks(base, head)
+	changes, err := g.Diff(fork, head)
+	if err != nil {
+		return nil, err
+	}
+	hunks, err := g.Hunks(fork, head)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +99,7 @@ func Run(o RunOptions) (*RunResult, error) {
 			tier2 = append(tier2, f.Path)
 		}
 	}
-	baseMod, _ := g.Show(base, "go.mod")
+	baseMod, _ := g.Show(fork, "go.mod")
 	headMod, _ := g.Show(head, "go.mod")
 	newMods := NewModules(baseMod, headMod)
 
@@ -128,7 +134,7 @@ func Run(o RunOptions) (*RunResult, error) {
 		ReadFirst: ReadFirst(cfg, hunks), Files: changes,
 		ProtectedTouched: protected, NewModules: newMods, Limits: Limits,
 		Provenance: Provenance{
-			Base: base, Head: head, RequestedBy: o.RequestedBy, Agents: agents, Trailers: trailers,
+			Base: base, MergeBase: fork, Head: head, RequestedBy: o.RequestedBy, Agents: agents, Trailers: trailers,
 			Attempt: o.Attempt, MaxAttempts: cfg.MaxAttempts, GateVersion: Version(),
 			Mode: o.Mode, Source: o.Source, SameModel: sameModel(agents),
 		},

@@ -120,6 +120,11 @@ func TestRunEndToEnd(t *testing.T) {
 	branch(t, dir, "self-graded", map[string]string{"lib/lib.go": broken,
 		"inv/inv_test.go": "package inv\n\nimport \"testing\"\n\nfunc TestAdd(t *testing.T) {}\n"})
 
+	// main moves on after the branches fork, touching a protected path. The branches must
+	// not be blamed for it: the diff starts at the merge base.
+	write(t, dir, map[string]string{"gate.yaml": fixture["gate.yaml"] + "# base moved on\n"})
+	git(t, dir, "commit", "-q", "-am", "main moves on")
+
 	now := func() time.Time { return time.Date(2026, 11, 20, 9, 0, 0, 0, time.UTC) }
 	tests := []struct {
 		head, spec      string

@@ -25,6 +25,7 @@ type AgentRecord struct {
 // Provenance is where the change and the verdict come from.
 type Provenance struct {
 	Base        string            `json:"base"`
+	MergeBase   string            `json:"merge_base"`
 	Head        string            `json:"head"`
 	RequestedBy string            `json:"requested_by"`
 	Agents      []AgentRecord     `json:"agents"`
@@ -165,7 +166,7 @@ func EvidenceMarkdown(ev *Evidence) string {
 	}
 
 	b.WriteString("\n## Provenance\n\n")
-	fmt.Fprintf(&b, "- base: `%s`\n- head: `%s`\n- requested by: %s\n", p.Base, p.Head, p.RequestedBy)
+	fmt.Fprintf(&b, "- base: `%s` (rules)\n- merge base: `%s` (diff from here)\n- head: `%s`\n- requested by: %s\n", p.Base, p.MergeBase, p.Head, p.RequestedBy)
 	if len(p.Agents) == 0 {
 		b.WriteString("- agent: none named in the commit trailers\n")
 	}

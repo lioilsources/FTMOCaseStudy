@@ -31,6 +31,12 @@ func (g Git) RevParse(ref string) (string, error) {
 	return strings.TrimSpace(out), err
 }
 
+// MergeBase returns the commit where head forked from base.
+func (g Git) MergeBase(base, head string) (string, error) {
+	out, err := g.Run("merge-base", base, head)
+	return strings.TrimSpace(out), err
+}
+
 // Show returns the content of path at rev.
 func (g Git) Show(rev, path string) ([]byte, error) {
 	out, err := g.Run("show", rev+":"+path)
@@ -110,8 +116,10 @@ func (g Git) Hunks(base, head string) ([]Hunk, error) {
 	var file string
 	for _, line := range strings.Split(out, "\n") {
 		switch {
-		case strings.HasPrefix(line, "+++ "):
-			file = strings.TrimPrefix(strings.TrimPrefix(line, "+++ "), "b/")
+		case strings.HasPrefix(line, "--- a/"): // the old path, kept when the file is deleted
+			file = strings.TrimPrefix(line, "--- a/")
+		case strings.HasPrefix(line, "+++ b/"):
+			file = strings.TrimPrefix(line, "+++ b/")
 		case strings.HasPrefix(line, "@@ "):
 			// @@ -a,b +c,d @@
 			f := strings.Fields(line)
