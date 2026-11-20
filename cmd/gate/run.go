@@ -15,9 +15,13 @@ func cmdRun(args []string) int {
 	mode := fs.String("mode", "blocking", "blocking or advisory")
 	attempt := fs.Int("attempt", 1, "attempt number within a loop")
 	requestedBy := fs.String("requested-by", "", "requester (default: git config user.name)")
+	source := fs.String("source", "live", "label of the change under test: live, replayed or seeded")
 	_ = fs.Parse(args)
 	if *mode != "blocking" && *mode != "advisory" {
 		return fail(fmt.Errorf("--mode must be blocking or advisory"))
+	}
+	if *source != "live" && *source != "replayed" && *source != "seeded" {
+		return fail(fmt.Errorf("--source must be live, replayed or seeded"))
 	}
 	repo, err := repoRoot()
 	if err != nil {
@@ -25,7 +29,7 @@ func cmdRun(args []string) int {
 	}
 	res, err := gate.Run(gate.RunOptions{
 		RepoDir: repo, Base: *base, Head: *head, SpecPath: *spec, Mode: *mode,
-		Attempt: *attempt, RequestedBy: requester(*requestedBy),
+		Attempt: *attempt, RequestedBy: requester(*requestedBy), Source: *source,
 	})
 	if err != nil {
 		return fail(err)

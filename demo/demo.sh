@@ -65,7 +65,7 @@ show git worktree add -q -b "$BR" ".factory/demo/seeded-$STAMP" main
 	git -c user.name=demo -c user.email=demo@example.invalid commit -q -am "seeded: weakened invariant")
 git worktree remove --force ".factory/demo/seeded-$STAMP"
 set +e
-show "$GATE" run --base main --head "$BR" --spec "$SPEC"
+show "$GATE" run --base main --head "$BR" --spec "$SPEC" --source seeded
 set -e
 pause
 
