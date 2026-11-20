@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 )
@@ -192,20 +193,34 @@ func EvidenceMarkdown(ev *Evidence) string {
 }
 
 // FailureReport is what goes back to the model: the failing checks and their evidence,
-// nothing else, and no suggested fix.
+// nothing else, and no suggested fix. It is deterministic for the same code (no run id,
+// timings or worktree paths), so a replayed loop sends the model the same prompt.
 func FailureReport(ev *Evidence) string {
 	var b strings.Builder
-	fmt.Fprintf(&b, "# Failure report %s (attempt %d)\n\n", ev.RunID, ev.Provenance.Attempt)
+	fmt.Fprintf(&b, "# Failure report (attempt %d)\n\n", ev.Provenance.Attempt)
 	for _, c := range ev.Checks {
 		if c.Status != StatusFail {
 			continue
 		}
 		fmt.Fprintf(&b, "## %s: %s\n\n", c.ID, c.Key)
 		if c.Detail != "" {
-			fmt.Fprintf(&b, "```\n%s\n```\n\n", c.Detail)
+			fmt.Fprintf(&b, "```\n%s\n```\n\n", Normalize(c.Detail))
 		}
 	}
 	return b.String()
+}
+
+var (
+	testTimings   = regexp.MustCompile(`\(\d+(\.\d+)?m?s\)`)
+	pkgTimings    = regexp.MustCompile(`(?m)\t\d+(\.\d+)?m?s$`)
+	worktreePaths = regexp.MustCompile(`\S*/\.factory/worktrees/[^/\s]+/`)
+)
+
+// Normalize removes timings and worktree paths from tool output.
+func Normalize(s string) string {
+	s = testTimings.ReplaceAllString(s, "")
+	s = pkgTimings.ReplaceAllString(s, "")
+	return worktreePaths.ReplaceAllString(s, "")
 }
 
 func capitalize(s string) string {

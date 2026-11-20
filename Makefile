@@ -1,6 +1,6 @@
 GO ?= go
 
-.PHONY: build test invariants gate demo demo-live eval
+.PHONY: build test invariants gate doctor demo demo-live eval
 
 build:
 	$(GO) build ./...
@@ -16,8 +16,14 @@ invariants:
 gate:
 	$(GO) build -o .factory/bin/gate ./cmd/gate
 
+doctor: gate
+	.factory/bin/gate doctor
+
 demo:
-	@echo "demo: not built yet (Phase 4)"; exit 1
+	@echo "doctor: gate
+	.factory/bin/gate doctor
+
+demo: not built yet (Phase 4)"; exit 1
 
 demo-live:
 	@echo "demo-live: not built yet (Phase 4)"; exit 1
