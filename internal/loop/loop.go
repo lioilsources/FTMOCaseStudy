@@ -115,7 +115,7 @@ func Run(ctx context.Context, o Options) (*Result, error) {
 	fmt.Fprintf(o.Out, "loop %s: spec %s, context %s, up to %d attempts, %s\n", loopID, o.SpecPath, contextProfile, maxAttempts, o.Source)
 
 	from := base // attempt 1 starts from base, later ones from the previous attempt
-	feedback := ""
+	feedback, lastGateReport := "", ""
 	for n := 1; n <= maxAttempts; n++ {
 		a, head, report, err := attempt(ctx, o, g, cfg, spec, promptText, promptSHA, invariants, loopID, base, from, feedback, n)
 		if err != nil {
@@ -130,7 +130,16 @@ func Run(ctx context.Context, o Options) (*Result, error) {
 		if head != "" {
 			from = head
 		}
-		feedback = report
+		// After an agent error the code did not change, so the last gate report still
+		// applies: send it again, after the note on why the reply could not be used.
+		if a.Outcome == AgentError && lastGateReport != "" {
+			feedback = report + "\n" + lastGateReport
+		} else {
+			feedback = report
+		}
+		if a.Outcome == gate.Fail {
+			lastGateReport = report
+		}
 	}
 	return res, writeSummary(o.RepoDir, res)
 }

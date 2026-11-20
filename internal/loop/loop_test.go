@@ -242,3 +242,27 @@ func TestLoopProtectedPathEscalates(t *testing.T) {
 		t.Fatalf("outcomes = %s, want ESCALATE", got)
 	}
 }
+
+func TestLoopKeepsGateReportAfterAgentError(t *testing.T) {
+	if testing.Short() {
+		t.Skip("runs the gate in a temporary repository")
+	}
+	dir := fixtureRepo(t)
+	srv := scriptedServer(t, reply(buggyLib), reply(buggyLib), reply(fixedLib))
+	recDir := filepath.Join(t.TempDir(), "recording")
+	rec := &agent.Recorder{Next: agent.Completion{Endpoint: agent.Endpoint{Label: "fake", BaseURL: srv.URL}}, Dir: recDir, Endpoint: "fake"}
+	res, err := Run(context.Background(), options(t, dir, rec, "live"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := outcomes(res); got != "FAIL,"+AgentError+",PASS" {
+		t.Fatalf("outcomes = %s", got)
+	}
+	data, err := os.ReadFile(filepath.Join(recDir, "call-003.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(data), "nothing changed") || !strings.Contains(string(data), "invariants") {
+		t.Fatal("attempt 3 prompt lacks the agent-error note or the last gate report")
+	}
+}

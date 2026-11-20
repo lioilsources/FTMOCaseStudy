@@ -34,3 +34,16 @@ stopped after one recorded call. Both are kept and listed (rule 5). The gate now
 worktrees on the system temp disk and uses its own build cache there. Five runs, `run-4` to
 `run-8`, are made with that gate and the same prompt, spec and `gate.yaml`. Rule 4 still
 picks the default from all runs in order.
+
+## Amendment 3, 2026-11-20, after all runs (decided by Olin)
+
+No run has outcomes FAIL, PASS, so rule 4 names `run-1`. `run-1` holds one recorded call
+made with the gate version that timed out; with the current gate its attempt 1 ends in FAIL,
+attempt 2 asks for a call that was never recorded, and the replay stops as stale. Olin chose
+`run-4` instead: the first run made with the final gate that replays to the end. Its replay
+was checked once: FAIL, FAIL, ESCALATE, the same as recorded. The choice is in
+`demo/DEFAULT`; `demo/RUNS.md` still lists every run.
+
+After the runs, the loop was changed to resend the last gate report after an agent error
+(runs 5 to 8 lost it on their third attempt). Recordings with an agent error therefore no
+longer replay byte for byte; `run-4` has none.
