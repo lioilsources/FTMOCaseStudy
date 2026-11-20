@@ -3,7 +3,7 @@ id: partial-fills
 tier: 2
 allowed_paths:
   - sample/orders/*.go
-plan_approved_by: ""
+plan_approved_by: "ol1n"
 ---
 
 # Partial fills

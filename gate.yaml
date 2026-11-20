@@ -51,11 +51,11 @@ roles:
   implementer:
     kind: completion          # or: command
     endpoint: spark
-    model: ""                 # Olin fills in
+    model: "implementer"                 # Olin fills in
     ladder: []                # optional: one model id per attempt, weakest first
     context: spec-only
     timeout_seconds: 180
   test_author:
     kind: completion
     endpoint: l40s
-    model: ""                 # a different model from the implementer
+    model: "qwen3-coder"                 # a different model from the implementer
