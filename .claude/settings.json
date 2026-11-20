@@ -4,7 +4,9 @@
       "Edit(/CLAUDE.md)",
       "Write(/CLAUDE.md)",
       "Edit(/sample/orders/invariants/**)",
-      "Write(/sample/orders/invariants/**)"
+      "Write(/sample/orders/invariants/**)",
+      "Edit(/gate.yaml)",
+      "Write(/gate.yaml)"
     ]
   }
 }

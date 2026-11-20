@@ -25,10 +25,14 @@ Recorded at Phase 0 on 2026-11-19.
 | Start | End | Phase | Model | Delegated task | Outcome |
 | --- | --- | --- | --- | --- | --- |
 | 2026-11-19 20:12 | | 0, 1 | Claude Opus 5.5 | Scaffold; sample service and invariant harness | STOP H1 reached |
+| 2026-11-20 | | 2 | Claude Opus 5.5 | Gate core | STOP H2 reached |
 
 ## What went wrong (agent-maintained, factual: failed approaches, rework, wrong assumptions)
 
 - Phase 1: the plan's stub shape (`t.Skip` in each check) does not work inside `rapid.Check`; rapid treats a skip as an invalid case and fails after too many. Fixed with a probe on the outer test (see PROGRESS).
+- Phase 2: the first counterexample capture cut the block at the wrong place (with `-v`, rapid prints the steps before the `--- FAIL` line); fixed and covered by a test.
+- Phase 2: the invariants check reported 0 ms because the deferred timer wrote to a copy; fixed with a named return.
+- Phase 2: the first fixture used a plain Go test as the invariants; `-rapid.*` flags made it fail to start, so it reported inconclusive. The fixture now uses rapid.
 - Phase 0: denying edits on all protected paths at once would have blocked the delegated work that creates them. Deny rules are added per path when it becomes human-owned.
 
 ## Plan provenance
