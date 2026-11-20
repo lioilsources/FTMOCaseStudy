@@ -290,9 +290,17 @@ func nextLoopID(repo string) (string, error) {
 }
 
 func writeSummary(repo string, res *Result) error {
+	return WriteSummaryTo(filepath.Join(gate.FactoryDir(repo), "loops", res.LoopID), res)
+}
+
+// WriteSummaryTo writes summary.json into dir, for example next to a recording.
+func WriteSummaryTo(dir string, res *Result) error {
 	data, err := json.MarshalIndent(res, "", "  ")
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(filepath.Join(gate.FactoryDir(repo), "loops", res.LoopID, "summary.json"), append(data, '\n'), 0o644)
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return err
+	}
+	return os.WriteFile(filepath.Join(dir, "summary.json"), append(data, '\n'), 0o644)
 }

@@ -75,6 +75,11 @@ func cmdLoop(args []string) int {
 	if err != nil {
 		return fail(err)
 	}
+	if *record != "" {
+		if err := loop.WriteSummaryTo(*record, res); err != nil {
+			return fail(err)
+		}
+	}
 	fmt.Printf("loop %s finished: %s\n", res.LoopID, res.Final)
 	for _, a := range res.Attempts {
 		fmt.Printf("  attempt %d  %-11s %-8s model %s, %d+%d tokens, %.1f s\n", a.N, a.Outcome, a.RunID, a.Model, a.TokensIn, a.TokensOut, a.Seconds)
