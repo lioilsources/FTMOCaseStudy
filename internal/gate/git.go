@@ -173,12 +173,13 @@ func (g Git) AddWorktree(dir, rev string) error {
 	return err
 }
 
-// RemoveWorktree removes a worktree created by AddWorktree.
+// RemoveWorktree removes a worktree created by AddWorktree, and its temp parent if empty.
 func (g Git) RemoveWorktree(dir string) {
 	if _, err := g.Run("worktree", "remove", "--force", dir); err != nil {
 		_ = os.RemoveAll(dir)
 		_, _ = g.Run("worktree", "prune")
 	}
+	_ = os.Remove(filepath.Dir(dir)) // only succeeds when empty
 }
 
 // OverlayProtected makes every protected path in the worktree equal to base: files from

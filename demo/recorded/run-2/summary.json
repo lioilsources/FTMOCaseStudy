@@ -1,0 +1,24 @@
+{
+  "loop_id": "l-0003",
+  "spec": "specs/partial-fills.md",
+  "context": "spec-only",
+  "source": "live",
+  "endpoint": "l40s",
+  "base": "7eaa49a44d57eabe2f9cd3c488988c18870ee5f4",
+  "attempts": [
+    {
+      "n": 1,
+      "model": "qwen3-coder",
+      "outcome": "ESCALATE",
+      "reason": "required checks could not reach a result: invariants",
+      "run_id": "r-0005",
+      "branch": "loop/l-0003/attempt-1",
+      "head": "a844b421248e307ade85dd7b8e7ba63f9bfe1dcf",
+      "tokens_in": 6966,
+      "tokens_out": 2766,
+      "seconds": 33.902311625,
+      "calls": 2
+    }
+  ],
+  "final": "ESCALATE"
+}

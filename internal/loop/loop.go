@@ -142,7 +142,10 @@ func attempt(ctx context.Context, o Options, g gate.Git, cfg *gate.Config, spec 
 	model := o.Role.ModelFor(n)
 	a := Attempt{N: n, Model: model}
 	branch := fmt.Sprintf("loop/%s/attempt-%d", loopID, n)
-	wt := filepath.Join(gate.FactoryDir(o.RepoDir), "worktrees", fmt.Sprintf("%s-a%d", loopID, n))
+	wt, err := gate.WorktreeDir(fmt.Sprintf("%s-a%d", loopID, n))
+	if err != nil {
+		return a, "", "", err
+	}
 	if _, err := g.Run("worktree", "add", "-q", "-b", branch, wt, from); err != nil {
 		return a, "", "", err
 	}

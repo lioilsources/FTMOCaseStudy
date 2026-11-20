@@ -154,7 +154,10 @@ func Run(o RunOptions) (*RunResult, error) {
 // runChecks checks head out into a worktree, overlays protected paths from base and runs
 // every configured check. Only a failed compile stops the later code checks.
 func runChecks(g Git, cfg *Config, spec *Spec, base, head, runID string, changes []FileChange) ([]CheckResult, error) {
-	wt := filepath.Join(FactoryDir(g.Dir), "worktrees", runID)
+	wt, err := WorktreeDir(runID)
+	if err != nil {
+		return nil, err
+	}
 	if err := g.AddWorktree(wt, head); err != nil {
 		return nil, err
 	}
@@ -181,6 +184,17 @@ func runChecks(g Git, cfg *Config, spec *Spec, base, head, runID string, changes
 		out = append(out, runBudget(cfg, spec, changes))
 	}
 	return out, nil
+}
+
+// WorktreeDir returns a fresh directory for a worktree on the system temp disk. The
+// repository may live on a slow volume; checks are far faster on local storage, and the
+// worktree is removed after the run.
+func WorktreeDir(name string) (string, error) {
+	parent, err := os.MkdirTemp("", "factory-gate-")
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(parent, name), nil
 }
 
 // nextRunID returns r-NNNN, one above the highest existing run.

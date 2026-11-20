@@ -25,7 +25,7 @@ func TestFailingOutput(t *testing.T) {
 }
 
 func TestNormalize(t *testing.T) {
-	in := "--- FAIL: TestInvariants (0.09s)\nFAIL\tpkg/x\t0.349s\n/tmp/repo/.factory/worktrees/r-0007/sample/orders/engine.go:3: bad"
+	in := "--- FAIL: TestInvariants (0.09s)\nFAIL\tpkg/x\t0.349s\n/var/folders/x/T/factory-gate-123456/r-0007/sample/orders/engine.go:3: bad"
 	want := "--- FAIL: TestInvariants \nFAIL\tpkg/x\nsample/orders/engine.go:3: bad"
 	if got := Normalize(in); got != want {
 		t.Fatalf("Normalize = %q, want %q", got, want)

@@ -25,3 +25,12 @@ tests with `-short`, which skips only those end-to-end tests (protected, always 
 Five more runs, `run-2` to `run-6`, are made with the fixed gate and the same prompt, spec
 and `gate.yaml`. Rule 4 picks the default from all runs in order. `run-2` was started once
 before the fix and stopped before the model replied; nothing was recorded for it.
+
+## Amendment 2, 2026-11-20, after run-2 and an interrupted run-3 (decided by Olin)
+
+The repository volume became very slow (a 50 MB write took 62 s while a backup ran).
+`run-2` ended in ESCALATE because the invariants timed out after a 540 s build; `run-3` was
+stopped after one recorded call. Both are kept and listed (rule 5). The gate now checks out
+worktrees on the system temp disk and uses its own build cache there. Five runs, `run-4` to
+`run-8`, are made with that gate and the same prompt, spec and `gate.yaml`. Rule 4 still
+picks the default from all runs in order.

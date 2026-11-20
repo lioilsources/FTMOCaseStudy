@@ -213,7 +213,7 @@ func FailureReport(ev *Evidence) string {
 var (
 	testTimings   = regexp.MustCompile(`\(\d+(\.\d+)?m?s\)`)
 	pkgTimings    = regexp.MustCompile(`(?m)\t\d+(\.\d+)?m?s$`)
-	worktreePaths = regexp.MustCompile(`\S*/\.factory/worktrees/[^/\s]+/`)
+	worktreePaths = regexp.MustCompile(`\S*/factory-gate-[0-9]+/[^/\s]+/`)
 )
 
 // Normalize removes timings and worktree paths from tool output.

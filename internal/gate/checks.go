@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -56,7 +57,7 @@ func runCmd(dir string, timeout time.Duration, name string, args ...string) cmdR
 	defer cancel()
 	cmd := exec.CommandContext(ctx, name, args...)
 	cmd.Dir = dir
-	cmd.Env = append(os.Environ(), "GOWORK=off", "GOFLAGS=-mod=readonly", "GOPROXY=off")
+	cmd.Env = append(os.Environ(), "GOWORK=off", "GOFLAGS=-mod=readonly", "GOPROXY=off", "GOCACHE="+checkCache())
 	var out bytes.Buffer
 	cmd.Stdout, cmd.Stderr = &out, &out
 	err := cmd.Run()
@@ -71,6 +72,15 @@ func runCmd(dir string, timeout time.Duration, name string, args ...string) cmdR
 		res.err = err
 	}
 	return res
+}
+
+// checkCache is the build cache for checks: on local storage, apart from the user's own.
+func checkCache() string {
+	dir, err := os.UserCacheDir()
+	if err != nil {
+		dir = os.TempDir()
+	}
+	return filepath.Join(dir, "factory-gate", "go-build")
 }
 
 func timeoutOf(c *CheckConfig, fallback int) time.Duration {
