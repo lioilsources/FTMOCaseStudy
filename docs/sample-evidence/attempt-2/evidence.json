@@ -1,0 +1,112 @@
+{
+  "run_id": "r-0002",
+  "verdict": "FAIL",
+  "reason": "blocking checks failed: build, invariants",
+  "checks": [
+    {
+      "id": "build",
+      "required": true,
+      "blocking": true,
+      "status": "fail",
+      "ms": 2583,
+      "key": "2 failing",
+      "detail": "--- FAIL: TestPartialFills (0.00s)\n    engine_test.go:106: Account changed on duplicate fill: before {1 1}, after {0 0}\n    engine_test.go:115: Order changed on duplicate fill: before {o1 buy 2 1 1 open}, after {o1 buy 2 1 2 filled}\nFAIL\nFAIL\tgithub.com/lioilsources/factory-gate/sample/orders\t0.195s\nFAIL"
+    },
+    {
+      "id": "invariants",
+      "required": true,
+      "blocking": true,
+      "status": "fail",
+      "ms": 732,
+      "key": "counterexample found, seed 1, 200 checks",
+      "detail": "=== RUN   TestInvariants\n    harness_test.go:120: [rapid] failed after 17 tests: not idempotent: delivering orders.Fill{FillID:f1 OrderID:o1 Quantity:1} twice changed the state:\n          first:  {Account:{Balance:1 Reserved:1} Orders:[{ID:o1 Side:buy Quantity:2 Price:1 FilledQuantity:1 Status:open}]}\n          second: {Account:{Balance:0 Reserved:0} Orders:[{ID:o1 Side:buy Quantity:2 Price:1 FilledQuantity:2 Status:filled}]}\n        To reproduce, specify -run=\"TestInvariants\" -rapid.seed=154\n        Failed test output:\n    harness_test.go:121: [rapid] draw initial balance: 2\n    harness_test.go:123: [rapid] draw steps: 2\n    harness_test.go:85: [rapid] draw kind: 0\n    harness_test.go:88: [rapid] draw order: \"o1\"\n    harness_test.go:89: [rapid] draw side: 1\n    harness_test.go:90: [rapid] draw quantity: 2\n    harness_test.go:91: [rapid] draw price: 1\n    harness_test.go:127: step 1: orders.PlaceOrder{OrderID:o1 Side:buy Quantity:2 Price:1} -\u003e err=\u003cnil\u003e; account={Balance:2 Reserved:2}\n    harness_test.go:85: [rapid] draw kind: 3\n    harness_test.go:94: [rapid] draw order: \"o1\"\n    harness_test.go:95: [rapid] draw quantity: 1\n    harness_test.go:96: [rapid] draw fill remaining: false\n    harness_test.go:99: [rapid] draw fill: \"f1\"\n    harness_test.go:127: step 2: orders.Fill{FillID:f1 OrderID:o1 Quantity:1} -\u003e err=\u003cnil\u003e; account={Balance:1 Reserved:1}\n    invariants_test.go:47: not idempotent: delivering orders.Fill{FillID:f1 OrderID:o1 Quantity:1} twice changed the state:\n          first:  {Account:{Balance:1 Reserved:1} Orders:[{ID:o1 Side:buy Quantity:2 Price:1 FilledQuantity:1 Status:open}]}\n          second: {Account:{Balance:0 Reserved:0} Orders:[{ID:o1 Side:buy Quantity:2 Price:1 FilledQuantity:2 Status:filled}]}\n--- FAIL: TestInvariants (0.12s)"
+    },
+    {
+      "id": "budget",
+      "required": true,
+      "blocking": true,
+      "status": "pass",
+      "ms": 0,
+      "key": "8/200 lines, 2/8 files"
+    }
+  ],
+  "read_first": [
+    {
+      "path": "sample/orders/engine_test.go",
+      "start": 83,
+      "lines": 36,
+      "why": "tier-2 path"
+    },
+    {
+      "path": "sample/orders/engine.go",
+      "start": 98,
+      "lines": 4,
+      "why": "tier-2 path"
+    },
+    {
+      "path": "sample/orders/engine_test.go",
+      "start": 23,
+      "lines": 4,
+      "why": "tier-2 path"
+    }
+  ],
+  "provenance": {
+    "base": "5a9c83d02cb76e3a911e4da8a5dc5cb07ab19afe",
+    "merge_base": "5a9c83d02cb76e3a911e4da8a5dc5cb07ab19afe",
+    "head": "84bdf4b487cc6a730011c41375df67ca71612131",
+    "requested_by": "lioilsources",
+    "agents": [
+      {
+        "role": "implementer",
+        "kind": "completion",
+        "model": "qwen3-coder",
+        "endpoint": "l40s",
+        "prompt_sha256": "c2f4f9032f8ec394376917cec801c39f31a815c6c80c1dcd70407309ec08e6ac",
+        "tokens_in": 4206,
+        "tokens_out": 2683,
+        "seconds": 21.244999458,
+        "source": "replayed"
+      }
+    ],
+    "trailers": {
+      "Agent": "implementer/completion",
+      "Endpoint": "l40s",
+      "Model": "qwen3-coder",
+      "Prompt-SHA256": "c2f4f9032f8ec394376917cec801c39f31a815c6c80c1dcd70407309ec08e6ac",
+      "Requested-By": "lioilsources",
+      "Run-ID": "l-0001/attempt-2"
+    },
+    "spec_path": "specs/partial-fills.md",
+    "spec_sha256": "3a84ef8a4f1771c8acb48cec173a9d81a804fd69833aa32301962e2e0b501ae0",
+    "attempt": 2,
+    "max_attempts": 3,
+    "gate_version": "5a9c83d02cb76e3a911e4da8a5dc5cb07ab19afe",
+    "mode": "blocking",
+    "source": "replayed"
+  },
+  "files": [
+    {
+      "path": "sample/orders/engine.go",
+      "status": "M",
+      "added": 5,
+      "deleted": 3
+    },
+    {
+      "path": "sample/orders/engine_test.go",
+      "status": "M",
+      "added": 39,
+      "deleted": 1
+    }
+  ],
+  "limits": [
+    "The gate is only as good as its invariants. With none written, it catches nothing that tests would not.",
+    "The invariants here are illustrative. Real ones have to come from the people who know the domain.",
+    "Passing the gate is not proof of correctness. It is evidence that named properties held under a stated number of generated cases with a recorded seed.",
+    "Loop results vary from run to run. One run proves nothing by itself.",
+    "The completion implementer rewrites whole files and cannot run tests itself.",
+    "The independent test author may share blind spots with the implementer.",
+    "Identities are asserted, not authenticated. In production, requester and approver come from the platform.",
+    "The audit log is a local file standing in for the platform's record.",
+    "With the command adapter the agent has a shell in the worktree and is not sandboxed."
+  ]
+}

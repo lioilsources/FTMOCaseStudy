@@ -7,7 +7,8 @@
 | 0 Scaffold and rules | done | 773043b | |
 | 1 Sample service and invariant harness | done | 2ed7d70 | assertions committed at H1, `make invariants` green: 200 checks, seed 1 |
 | 2 Gate core | done | 6830582 | Olin ran it; merge-base bug found by his run and fixed |
-| 3 Agent adapters and the loop | fake-server part done; live part open | (this commit) | waiting for endpoint and model ids |
+| 3 Agent adapters and the loop | done | 7eaa49a | doctor green (implementer on l40s); live loops recorded; replay of run-4 reproduced FAIL, FAIL, ESCALATE |
+| 4 Demo: recorded and live | STOP H3, waiting for Olin | 5a9c83d | `make demo` clean twice from a fresh clone (120 s, 29 s); `make demo-live` not yet run end to end |
 
 ## Decisions and deviations from the plan
 
@@ -23,6 +24,9 @@
 - Phase 3: the loop lives in `internal/loop` (it imports both `gate` and `agent`; keeping it out of `internal/gate` avoids an import cycle).
 - Phase 3: the `Run-ID` trailer names the loop attempt (`l-0001/attempt-2`), because the commit exists before its gate run; the gate run id is in the loop summary and the audit line.
 - Phase 3: `failure_report.md` carries no run id, timings or worktree paths, so a replayed loop sends the model a byte-identical prompt and the prompt-hash check holds.
+- Phase 4: capture rule fixed and committed before the first live run (`demo/CAPTURE_RULE.md`), with three amendments decided by Olin: run-1 lost to a build-check timeout (fixed: unit tests with `-short`), run-2 and run-3 lost to a slow repository volume (fixed: check worktrees and build cache on the local temp disk), default `run-4` because rule 4's `run-1` cannot replay with the final gate.
+- Phase 4: the seeded shortcut runs with `gate run --source seeded`, so its evidence says so.
+- Phase 4: after the runs, the loop resends the last gate report after an agent error. Runs 5 to 8 with agent errors no longer replay byte for byte; run-4 does.
 - Phase 3: `command` adapter not built (no invocation supplied; SwarmBattle is cold on SPARK).
 - Phase 2 fix after H2: the diff starts at the merge base of base and head, not at the base tip. Olin's own run showed the bug: commits that landed on main after a branch forked were reported as the branch touching protected paths.
 - Phase 2 done criteria, how they were met:
@@ -38,15 +42,11 @@
 
 ## Open questions for Olin
 
-- Phase 3 live items are open: `gate doctor` green, one live loop with `--record`, replay of it. Needs `.env` and model ids in `gate.yaml` (yours).
-- L40S session (asked at Olin's request): coder `qwen3-coder` on the VM at port 8003, not in tcloud-tunnel; needs an own forward `ssh -N -L 18003:127.0.0.1:8003 tcloud`, no auth header, only inside a qctl window (~30 min, profile W). It offered the coder during the running UC27 eval "because Olin wants it sooner"; not used, since Olin did not say so in this chat. Decide: wait for a window after 10:10, or use it now.
-- SPARK: ai-gateway answers `/v1/models` without a header, but the active profile is comfy, so chat needs an LLM lease through `sparkctl`. AiSwarmBattle is cold on SPARK, so the `command` adapter for SwarmBattle is not built.
-
-- STOP H2: review `gate.yaml` (yours from now on, edit tools denied) and read `.factory/runs/r-0002/evidence.md` end to end (regenerate with the commands below).
-- For Phase 3: set `FACTORY_SPARK_URL`, `FACTORY_SPARK_HEADERS`, `FACTORY_L40S_URL`, `FACTORY_L40S_HEADERS` in `.env`; a model id per role in `gate.yaml`; the SwarmBattle/OpenCode invocation if you want the `command` adapter.
-
-- `plan_approved_by` in `specs/partial-fills.md` is still empty. Until it is filled, the gate escalates every change to `sample/orders/**` (tier 2), which is the intended behaviour.
+- STOP H3: run `make demo` and `make demo-live` yourself. `demo-live` needs the L40S coder: open the forward (`ssh -N -L 18003:127.0.0.1:8003 tcloud`) inside a qctl window. It has not been run end to end yet (done criterion open).
+- No live run reached PASS: `qwen3-coder` (spec-only) fails idempotency on attempt 1 in all five valid runs and does not fix it with the counterexample in hand; it often returns the same files (agent_error). A result to show; Phase 7's `spec+invariants` cell will say whether context helps.
+- Test author is on SPARK (`bench-qwen36`): Phase 6 needs `FACTORY_SPARK_HEADERS` (`Authorization: Bearer <LITELLM_MASTER_KEY>`) in `.env` and a `sparkctl` lease on `qwen36` (Director's advice). The model id in LiteLLM is `bench-qwen36`, already in `gate.yaml`.
+- `gitleaks` and `govulncheck` are not installed; Phase 5 needs them (install is your call).
 
 ## Next step (one sentence, concrete enough to resume cold)
 
-With `.env` and model ids in place: `make doctor`, then `gate loop --spec specs/partial-fills.md --record demo/recorded/<run>` and replay it.
+After Olin's H3 review: Phase 5, the security check (needs gitleaks and govulncheck installed) and `gate approve`.
