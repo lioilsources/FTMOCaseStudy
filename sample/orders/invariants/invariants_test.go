@@ -10,7 +10,7 @@ import "pgregory.net/rapid"
 // checkNoOverfill: no order is ever filled beyond its quantity.
 // For every order in w.Now(): 0 <= FilledQuantity <= Quantity.
 
-// 1. Objednávka nikdy není přeplněná.
+// 1. An order is never overfilled.
 func checkNoOverfill(t rapid.TB, w *World) {
 	for _, o := range w.Now().Orders {
 		if o.FilledQuantity < 0 || o.FilledQuantity > o.Quantity {
@@ -22,7 +22,7 @@ func checkNoOverfill(t rapid.TB, w *World) {
 // checkNoNegativeBalance: the account never goes below zero, and never reserves more than
 // it holds. In w.Now().Account: Balance >= 0, Reserved >= 0, Reserved <= Balance.
 
-// 2. Účet nejde do mínusu a nerezervuje víc, než má.
+// 2. The account never goes negative and never reserves more than it has.
 func checkNoNegativeBalance(t rapid.TB, w *World) {
 	a := w.Now().Account
 	switch {
@@ -39,10 +39,10 @@ func checkNoNegativeBalance(t rapid.TB, w *World) {
 // Take e := w.Copy() (already contains w.Last), apply w.Last to e again, and require
 // DiffSnapshots(w.Now(), SnapshotOf(e)) == "".
 
-// 3. Událost doručená dvakrát má stejný efekt jako jednou.
+// 3. An event delivered twice has the same effect as delivering it once.
 func checkIdempotentEvents(t rapid.TB, w *World) {
-	e := w.Copy()       // nový engine s celou historií, včetně poslední události
-	_ = e.Apply(w.Last) // doruč poslední událost ještě jednou; odmítnutí je v pořádku
+	e := w.Copy()       // a new engine with the whole history, including the last event
+	_ = e.Apply(w.Last) // deliver the last event once more; a rejection is fine
 	if d := DiffSnapshots(w.Now(), SnapshotOf(e)); d != "" {
 		t.Fatalf("not idempotent: delivering %T%+v twice changed the state:%s", w.Last, w.Last, d)
 	}
