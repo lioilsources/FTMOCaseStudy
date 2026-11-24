@@ -35,10 +35,10 @@ diff --git a/sample/orders/invariants/invariants_test.go b/sample/orders/invaria
 +++ b/sample/orders/invariants/invariants_test.go
 @@ -41,9 +41,5 @@
 
- // 3. Událost doručená dvakrát má stejný efekt jako jednou.
+ // 3. An event delivered twice has the same effect as delivering it once.
  func checkIdempotentEvents(t rapid.TB, w *World) {
--	e := w.Copy()       // nový engine s celou historií, včetně poslední události
--	_ = e.Apply(w.Last) // doruč poslední událost ještě jednou; odmítnutí je v pořádku
+-	e := w.Copy()       // a new engine with the whole history, including the last event
+-	_ = e.Apply(w.Last) // deliver the last event once more; a rejection is fine
 -	if d := DiffSnapshots(w.Now(), SnapshotOf(e)); d != "" {
 -		t.Fatalf("not idempotent: delivering %T%+v twice changed the state:%s", w.Last, w.Last, d)
 -	}

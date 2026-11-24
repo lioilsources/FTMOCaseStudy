@@ -42,6 +42,10 @@ Recorded at Phase 0 on 2026-11-19.
 - Phase 2: the first counterexample capture cut the block at the wrong place (with `-v`, rapid prints the steps before the `--- FAIL` line); fixed and covered by a test.
 - Phase 2: the invariants check reported 0 ms because the deferred timer wrote to a copy; fixed with a named return.
 - Phase 2: the first fixture used a plain Go test as the invariants; `-rapid.*` flags made it fail to start, so it reported inconclusive. The fixture now uses rapid.
+- Phase 9: translating the invariant comments to English broke `make demo`: the seeded patch
+  `demo/attempts/weakened-invariant.patch` carried the old comment lines as context and no longer
+  applied. The agent had checked tests and evals after the translation, not the demo; Olin found it
+  by running `make demo`. Fixed by updating the patch context.
 - Phase 0: denying edits on all protected paths at once would have blocked the delegated work that creates them. Deny rules are added per path when it becomes human-owned.
 
 ## Plan provenance
@@ -102,8 +106,9 @@ Measured from the session transcript and commit times (wall clock, not hands-on 
 | Phases 0 to 4 (Claude Code session) | 2026-11-19 20:11 to 2026-11-20 09:30 | 13 messages from me; most of the time the agent worked or the live runs ran unattended |
 | README, evals, presentation | 2026-11-24 from 05:50 | |
 
-- My hands-on time: 30 minutes on the plan, the rest under 2 hours, up to `make demo`, which I have
-  not run myself yet; I trusted it. The suggested budget was about 4 hours.
+- My hands-on time: 30 minutes on the plan, the rest under 2 hours. The suggested budget was about
+  4 hours. I ran `make demo` myself only at the end, before sending; it failed at the seeded step
+  (see "What went wrong") and was fixed the same morning.
 - What took longer than expected: live capture on the local models (two infrastructure
   failures: a build-check timeout and a slow repository volume during a backup), and setting up
   the endpoints and access windows on my own hardware.
