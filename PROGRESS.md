@@ -8,7 +8,9 @@
 | 1 Sample service and invariant harness | done | 2ed7d70 | assertions committed at H1, `make invariants` green: 200 checks, seed 1 |
 | 2 Gate core | done | 6830582 | Olin ran it; merge-base bug found by his run and fixed |
 | 3 Agent adapters and the loop | done | 7eaa49a | doctor green (implementer on l40s); live loops recorded; replay of run-4 reproduced FAIL, FAIL, ESCALATE |
-| 4 Demo: recorded and live | STOP H3, waiting for Olin | 5a9c83d | `make demo` clean twice from a fresh clone (120 s, 29 s); `make demo-live` not yet run end to end |
+| 4 Demo: recorded and live | STOP H3, waiting for Olin | 5a9c83d | `make demo` clean twice from a fresh clone (115 s, 57 s; `run/fresh-clone.log`); `make demo-live` not yet run end to end |
+| 7 Gate evals | static cases done; matrix not built | df19016 | `make eval`: 11 cases, 9 OK, 2 known misses (reserve-release not found at 200 cases / seed 1; runtime secret, no security check), 0 unexpected |
+| 9 Wrap-up | README done; BUILD_LOG human sections drafted for Olin | f4a4658 | presentation draft in a claude.ai doc, outside the repo |
 
 ## Decisions and deviations from the plan
 
@@ -49,4 +51,4 @@
 
 ## Next step (one sentence, concrete enough to resume cold)
 
-After Olin's H3 review: Phase 5, the security check (needs gitleaks and govulncheck installed) and `gate approve`.
+Olin confirms the drafted BUILD_LOG sections, pastes the translated invariant comments, records `make demo`, and decides whether to raise the invariant check count (the reserve-release miss); then push and send.

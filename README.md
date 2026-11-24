@@ -43,6 +43,8 @@ make doctor                # is the implementer reachable, and how fast
 make demo-live             # live loop, recorded into demo/recorded/live-<time>
 ```
 
+`make eval` runs the gate evals offline (about a minute).
+
 Headers never reach logs, recordings, evidence or the audit file; a test checks that.
 
 ## The one design rule
@@ -91,7 +93,10 @@ failed the idempotency invariant: a duplicate fill event was applied twice. The 
 mentions duplicates, so this is exactly the gap the invariants exist to cover. No run reached
 PASS within three attempts; after the counterexample the model either repeated the bug or
 returned no change (`agent_error`). Every broken change was stopped before a human saw it.
-Gate evals (`evals/RESULTS.md`) are not built yet.
+**The gate is measured too.** `make eval` runs 11 hand-written changes with a known right answer
+through the real gate (`evals/RESULTS.md`): 9 correct, 2 known misses, 0 unexpected. The misses
+are kept, not tuned away: a reserve-release bug that 200 generated cases with seed 1 do not find
+(500 cases do), and a runtime-built secret, because the security check is not built yet.
 
 ## What is live, recorded, replayed and seeded
 
@@ -124,9 +129,9 @@ cover it instead.
 
 ## Not built yet
 
-Security check and `gate approve` (Phase 5), the independent test author (Phase 6), gate
-evals and the model matrix (Phase 7), the mutation check (Phase 8), a CI workflow running the
-gate in advisory mode on pull requests. `make demo-live` has not yet been run end to end.
+Security check and `gate approve` (Phase 5), the independent test author (Phase 6), the
+loop matrix of models and contexts (Phase 7, second half), the mutation check (Phase 8), a CI
+workflow running the gate in advisory mode on pull requests. `make demo-live` has not yet been run end to end.
 
 ## Layout
 
