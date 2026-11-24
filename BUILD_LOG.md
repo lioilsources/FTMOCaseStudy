@@ -27,6 +27,7 @@ Recorded at Phase 0 on 2026-11-19.
 | 2026-11-19 20:12 | | 0, 1 | Claude Opus 5.5 | Scaffold; sample service and invariant harness | STOP H1 reached |
 | 2026-11-20 | | 2 | Claude Opus 5.5 | Gate core | STOP H2 reached |
 | 2026-11-20 03:00 | 07:50 | 3, 4 | Claude Opus 5.5 | Agent adapters, record/replay, loop, doctor; live capture; demo | STOP H3 reached |
+| 2026-11-24 05:50 | | 7, 9 | Claude Opus 5.5 | README; static gate evals (sub-agent in a worktree); draft of the human sections below; presentation draft | in progress |
 
 ## What went wrong (agent-maintained, factual: failed approaches, rework, wrong assumptions)
 
@@ -45,12 +46,63 @@ Recorded at Phase 0 on 2026-11-19.
 
 ## Plan provenance
 
-Drafted with Claude in a chat session from my outline. [Olin: confirm or correct]
+Drafted with Claude in a claude.ai chat on 2026-11-19, from the assignment and my stance-and-outline
+document (thesis, problem order, design, prototype scope, demo, limits, time budget). The plan was
+then handed to Claude Code as `Prompts/00-FACTORY_PLAN.md`. [Olin: confirm or correct]
+
+> Draft note: the four sections below were drafted by the agent on 2026-11-24 from the session
+> transcript and the commit history, at Olin's request. Olin confirms, corrects or deletes each
+> line; anything marked [Olin] is his to fill. Remove this note when done.
 
 ## What I reviewed (Olin)
 
+- At each STOP (H1, H2, H3) I read the summary and `PROGRESS.md` and answered the open questions.
+- Phase 1: ran `make invariants` after the assertions were in place (ok, 200 cases, seed 1).
+- Phase 2: ran the gate myself on a scratch branch (`gate run --base main --head scratch/overfill`,
+  run r-0003). The evidence blamed my branch for commits that had landed on main after it forked:
+  the gate diffed against the base tip instead of the merge base. Reported it; fixed with a
+  regression test (commit `6830582`).
+- Phase 4: read the capture rule before the live runs and each amendment before it was applied.
+- [Olin: anything else you actually read: gate code, evidence files, RUNS.md, the demo run]
+
 ## What I wrote by hand (Olin)
+
+- `gate.yaml`: model ids per role, the role swap (implementer on the L40S coder, test author on
+  SPARK), the fix of a typo (`rroles:`) that broke the config.
+- `specs/partial-fills.md`: `plan_approved_by` (the tier-2 plan approval).
+- The invariant assertions in `sample/orders/invariants/invariants_test.go`: **drafted by the
+  agent, pasted and committed by me** (the edit tools are denied on that path), with my own
+  comments. I did not write the assertion logic from scratch.
+- `.env` with the endpoints (not in the repo).
+- [Olin: anything else]
 
 ## Where I overrode the agent (Olin)
 
+- Default demo recording: the capture rule named `run-1`; I chose `run-4`, the first run made with
+  the final gate that replays to the end (`demo/CAPTURE_RULE.md`, amendment 3).
+- After `run-1` timed out on infrastructure, kept it listed and ran `run-2` to `run-6` with the
+  fixed gate instead of replacing it (amendment 1); after the slow-disk failure, moved check
+  worktrees to the system disk and ran `run-4` to `run-8` (amendment 2).
+- Swapped the model roles in `gate.yaml` against the original plan, which had the implementer on
+  SPARK. [Olin: why: L40S coder available that night / SPARK busy?]
+- Renamed the public repository to `factory-gate` so that no real company name appears in it.
+- [Olin: anything the agent proposed that you rejected]
+
 ## Time spent and why (Olin)
+
+Measured from the session transcript and commit times (wall clock, not hands-on time):
+
+| Block | Wall clock | Notes |
+| --- | --- | --- |
+| Stance, outline and plan (claude.ai chat) | 2026-11-19, [Olin: minutes] | |
+| Phases 0 to 4 (Claude Code session) | 2026-11-19 20:11 to 2026-11-20 09:30 | 13 messages from me; most of the time the agent worked or the live runs ran unattended |
+| README, evals, presentation | 2026-11-24 from 05:50 | |
+
+- My hands-on time: [Olin: hours]. The suggested budget was about 4 hours.
+- What took longer than expected: live capture on the local models (two infrastructure
+  failures: a build-check timeout and a slow repository volume during a backup), and setting up
+  the endpoints and access windows on my own hardware.
+- What I chose to invest in: running the implementer on my own local models rather than a hosted
+  API, so the loop and the matrix cost time, not money; recording every run honestly.
+- What I cut: the security check, the independent test author and the mutation check
+  (Phases 5, 6, 8). [Olin: confirm]
