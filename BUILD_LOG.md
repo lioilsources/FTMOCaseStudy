@@ -48,11 +48,12 @@ Recorded at Phase 0 on 2026-11-19.
 
 Drafted with Claude in a claude.ai chat on 2026-11-19, from the assignment and my stance-and-outline
 document (thesis, problem order, design, prototype scope, demo, limits, time budget). The plan was
-then handed to Claude Code as `Prompts/00-FACTORY_PLAN.md`. [Olin: confirm or correct]
+then handed to Claude Code as `Prompts/00-FACTORY_PLAN.md`. I pasted the assignment PDF into the
+chat, talked it through for a while, and chose the path that seemed to matter to the largest number
+of the people in the brief.
 
-> Draft note: the four sections below were drafted by the agent on 2026-11-24 from the session
-> transcript and the commit history, at Olin's request. Olin confirms, corrects or deletes each
-> line; anything marked [Olin] is his to fill. Remove this note when done.
+> The four sections below were drafted by the agent from the session transcript and the commit
+> history, at my request; I corrected and completed them.
 
 ## What I reviewed (Olin)
 
@@ -63,7 +64,7 @@ then handed to Claude Code as `Prompts/00-FACTORY_PLAN.md`. [Olin: confirm or co
   the gate diffed against the base tip instead of the merge base. Reported it; fixed with a
   regression test (commit `6830582`).
 - Phase 4: read the capture rule before the live runs and each amendment before it was applied.
-- [Olin: anything else you actually read: gate code, evidence files, RUNS.md, the demo run]
+- The agent configuration and the invariants.
 
 ## What I wrote by hand (Olin)
 
@@ -74,7 +75,8 @@ then handed to Claude Code as `Prompts/00-FACTORY_PLAN.md`. [Olin: confirm or co
   agent, pasted and committed by me** (the edit tools are denied on that path), with my own
   comments. I did not write the assertion logic from scratch.
 - `.env` with the endpoints (not in the repo).
-- [Olin: anything else]
+- I barely opened an IDE. Apart from the gate config and the invariants, which I had to understand
+  and change, I did not look at the files.
 
 ## Where I overrode the agent (Olin)
 
@@ -84,9 +86,11 @@ then handed to Claude Code as `Prompts/00-FACTORY_PLAN.md`. [Olin: confirm or co
   fixed gate instead of replacing it (amendment 1); after the slow-disk failure, moved check
   worktrees to the system disk and ran `run-4` to `run-8` (amendment 2).
 - Swapped the model roles in `gate.yaml` against the original plan, which had the implementer on
-  SPARK. [Olin: why: L40S coder available that night / SPARK busy?]
+  SPARK. The L40S coder was available that night and SPARK was busy. The L40S has less memory, so
+  weaker models, but they run faster; I also wanted to see whether a 30B model is enough for this task.
 - Renamed the public repository to `factory-gate` so that no real company name appears in it.
-- [Olin: anything the agent proposed that you rejected]
+- The most important decision was what to build. I chose the most ambitious option that also serves
+  the largest number of the people in the brief.
 
 ## Time spent and why (Olin)
 
@@ -94,15 +98,16 @@ Measured from the session transcript and commit times (wall clock, not hands-on 
 
 | Block | Wall clock | Notes |
 | --- | --- | --- |
-| Stance, outline and plan (claude.ai chat) | 2026-11-19, [Olin: minutes] | |
+| Stance, outline and plan (claude.ai chat) | 2026-11-19, 30 minutes | |
 | Phases 0 to 4 (Claude Code session) | 2026-11-19 20:11 to 2026-11-20 09:30 | 13 messages from me; most of the time the agent worked or the live runs ran unattended |
 | README, evals, presentation | 2026-11-24 from 05:50 | |
 
-- My hands-on time: [Olin: hours]. The suggested budget was about 4 hours.
+- My hands-on time: 30 minutes on the plan, the rest under 2 hours, up to `make demo`, which I have
+  not run myself yet; I trusted it. The suggested budget was about 4 hours.
 - What took longer than expected: live capture on the local models (two infrastructure
   failures: a build-check timeout and a slow repository volume during a backup), and setting up
   the endpoints and access windows on my own hardware.
 - What I chose to invest in: running the implementer on my own local models rather than a hosted
   API, so the loop and the matrix cost time, not money; recording every run honestly.
 - What I cut: the security check, the independent test author and the mutation check
-  (Phases 5, 6, 8). [Olin: confirm]
+  (Phases 5, 6, 8). I have not run an independent multi-agent review of the code either.
