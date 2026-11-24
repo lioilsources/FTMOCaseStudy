@@ -29,5 +29,7 @@ demo-live: gate
 	@.factory/bin/gate doctor --role implementer || { echo "endpoint not ready: run make demo (replayed) instead"; exit 1; }
 	.factory/bin/gate loop --spec specs/partial-fills.md --base main --stream --record demo/recorded/live-$$(date +%Y%m%d-%H%M%S)
 
-eval:
-	@echo "eval: not built yet (Phase 7)"; exit 1
+# Static gate evals: hand-written cases judged by the real gate; writes evals/RESULTS.md.
+# Exits non-zero on any unexpected verdict. Known misses are listed, not failed.
+eval: gate
+	.factory/bin/gate eval

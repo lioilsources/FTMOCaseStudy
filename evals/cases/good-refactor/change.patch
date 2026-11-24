@@ -1,0 +1,32 @@
+diff --git a/sample/orders/engine.go b/sample/orders/engine.go
+index 9f3b325..88decf4 100644
+--- a/sample/orders/engine.go
++++ b/sample/orders/engine.go
+@@ -87,16 +87,21 @@ func (e *Engine) fill(ev Fill) error {
+ 	if ev.Quantity != o.Remaining() {
+ 		return fmt.Errorf("%w: got %d, remaining %d", ErrFillQuantity, ev.Quantity, o.Remaining())
+ 	}
+-	value := ev.Quantity * o.Price
++	e.settle(o, ev.Quantity)
++	o.FilledQuantity += ev.Quantity
++	o.Status = Filled
++	return nil
++}
++
++// settle moves the value of quantity at the order's price between reservation and balance.
++func (e *Engine) settle(o *Order, quantity int64) {
++	value := quantity * o.Price
+ 	if o.Side == Buy {
+ 		e.account.Reserved -= value
+ 		e.account.Balance -= value
+-	} else {
+-		e.account.Balance += value
++		return
+ 	}
+-	o.FilledQuantity += ev.Quantity
+-	o.Status = Filled
+-	return nil
++	e.account.Balance += value
+ }
+ 
+ func (e *Engine) cancel(ev Cancel) error {

@@ -1,0 +1,6 @@
+name: bad-weakened-invariant
+kind: bad
+description: A fill-after-cancel bug plus a deleted assertion in the invariants, so the invariants of head would pass.
+expect:
+  verdict: ESCALATE
+  fires: protected-path

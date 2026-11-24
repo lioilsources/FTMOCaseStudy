@@ -1,0 +1,5 @@
+name: good-refactor
+kind: good
+description: A pure refactor of the engine. Buy and sell settlement move into one helper; behaviour is unchanged.
+expect:
+  verdict: PASS

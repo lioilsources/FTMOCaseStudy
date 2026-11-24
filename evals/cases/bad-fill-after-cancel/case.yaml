@@ -1,0 +1,6 @@
+name: bad-fill-after-cancel
+kind: bad
+description: Partial fills that reject fills only on filled orders, so a cancelled order still takes fills.
+expect:
+  verdict: FAIL
+  fires: invariants

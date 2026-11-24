@@ -1,0 +1,5 @@
+name: good-partial-fills
+kind: good
+description: The spec done right. Partial fills, overfill rejected, a fill id applied at most once, unit tests updated.
+expect:
+  verdict: PASS

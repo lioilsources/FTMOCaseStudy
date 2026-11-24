@@ -1,0 +1,6 @@
+name: bad-out-of-scope
+kind: bad
+description: Correct partial fills plus a new operations tool outside the spec's allowed_paths.
+expect:
+  verdict: FAIL
+  fires: budget
