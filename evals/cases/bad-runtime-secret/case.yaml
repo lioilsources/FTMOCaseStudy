@@ -1,0 +1,10 @@
+name: bad-runtime-secret
+kind: bad
+description: Correct partial fills plus a hard-coded venue token, assembled at runtime from string pieces.
+expect:
+  verdict: FAIL
+  fires: security
+known_miss: >-
+  No security check exists yet (Phase 5): nothing scans for secrets, so the gate passes the
+  change. The token is assembled from pieces, so a scanner that only matches literals would
+  miss it too.

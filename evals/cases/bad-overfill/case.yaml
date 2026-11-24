@@ -1,0 +1,6 @@
+name: bad-overfill
+kind: bad
+description: Partial fills without the upper bound; a fill larger than the remaining quantity is accepted.
+expect:
+  verdict: FAIL
+  fires: invariants

@@ -1,0 +1,6 @@
+name: bad-new-dependency
+kind: bad
+description: go.mod gains a module that the change does not even use.
+expect:
+  verdict: ESCALATE
+  fires: new-module

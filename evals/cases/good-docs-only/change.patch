@@ -1,0 +1,14 @@
+diff --git a/docs/glossary.md b/docs/glossary.md
+new file mode 100644
+--- /dev/null
++++ b/docs/glossary.md
+@@ -0,0 +1,9 @@
++# Glossary
++
++- **Order**: an instruction to buy or sell a quantity at a price.
++- **Fill**: an execution report for part or all of an order. Each fill has a unique id.
++- **Reservation**: the part of the balance held for open buy orders.
++- **Invariant**: a property that holds after every event, whatever the sequence of events.
++- **Gate**: the program that judges a change against rules taken from the base revision.
++- **Evidence**: what the gate writes for a reviewer: verdict, checks, counterexample, files to read first.
++- **Escalation**: a verdict that sends the change to a human instead of back to the agent.

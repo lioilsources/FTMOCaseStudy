@@ -1,0 +1,75 @@
+diff --git a/sample/orders/engine.go b/sample/orders/engine.go
+index 9f3b325..a3203cb 100644
+--- a/sample/orders/engine.go
++++ b/sample/orders/engine.go
+@@ -9,11 +9,12 @@ import (
+ type Engine struct {
+ 	account Account
+ 	orders  map[string]*Order
++	fills   map[string]bool // fill ids already applied
+ }
+ 
+ // NewEngine returns an engine whose account starts with the given balance.
+ func NewEngine(balance int64) *Engine {
+-	return &Engine{account: Account{Balance: balance}, orders: map[string]*Order{}}
++	return &Engine{account: Account{Balance: balance}, orders: map[string]*Order{}, fills: map[string]bool{}}
+ }
+ 
+ // Account returns a copy of the account.
+@@ -72,7 +73,7 @@ func (e *Engine) place(ev PlaceOrder) error {
+ 	return nil
+ }
+ 
+-// fill accepts only a fill for the full remaining quantity.
++// fill accepts a fill for up to the remaining quantity. A fill id is applied at most once.
+ func (e *Engine) fill(ev Fill) error {
+ 	if ev.FillID == "" || ev.Quantity <= 0 {
+ 		return fmt.Errorf("%w: %+v", ErrInvalidEvent, ev)
+@@ -84,7 +85,7 @@ func (e *Engine) fill(ev Fill) error {
+ 	if o.Status != Open {
+ 		return fmt.Errorf("%w: %s is %s", ErrOrderNotOpen, o.ID, o.Status)
+ 	}
+-	if ev.Quantity != o.Remaining() {
++	if ev.Quantity > o.Remaining() {
+ 		return fmt.Errorf("%w: got %d, remaining %d", ErrFillQuantity, ev.Quantity, o.Remaining())
+ 	}
+ 	value := ev.Quantity * o.Price
+@@ -95,7 +96,10 @@ func (e *Engine) fill(ev Fill) error {
+ 		e.account.Balance += value
+ 	}
+ 	o.FilledQuantity += ev.Quantity
+-	o.Status = Filled
++	if o.Remaining() == 0 {
++		o.Status = Filled
++	}
++	e.fills[ev.FillID] = true
+ 	return nil
+ }
+ 
+diff --git a/sample/orders/engine_test.go b/sample/orders/engine_test.go
+index 84e8dce..2eeff4f 100644
+--- a/sample/orders/engine_test.go
++++ b/sample/orders/engine_test.go
+@@ -20,7 +20,9 @@ func TestApply(t *testing.T) {
+ 		{"place sell reserves nothing", []Event{sell}, nil, Account{100, 0}, map[string]Status{"o2": Open}},
+ 		{"full buy fill", []Event{buy, Fill{"f1", "o1", 10}}, nil, Account{50, 0}, map[string]Status{"o1": Filled}},
+ 		{"full sell fill", []Event{sell, Fill{"f1", "o2", 4}}, nil, Account{128, 0}, map[string]Status{"o2": Filled}},
+-		{"partial fill rejected", []Event{buy, Fill{"f1", "o1", 3}}, ErrFillQuantity, Account{100, 50}, map[string]Status{"o1": Open}},
++		{"partial fill accepted", []Event{buy, Fill{"f1", "o1", 3}}, nil, Account{85, 35}, map[string]Status{"o1": Open}},
++		{"partial fills complete the order", []Event{buy, Fill{"f1", "o1", 3}, Fill{"f2", "o1", 7}}, nil, Account{50, 0}, map[string]Status{"o1": Filled}},
++		{"cancel after partial fill releases the rest", []Event{buy, Fill{"f1", "o1", 3}, Cancel{"o1"}}, nil, Account{85, 0}, map[string]Status{"o1": Cancelled}},
+ 		{"overfill rejected", []Event{buy, Fill{"f1", "o1", 11}}, ErrFillQuantity, Account{100, 50}, map[string]Status{"o1": Open}},
+ 		{"cancel releases", []Event{buy, Cancel{"o1"}}, nil, Account{100, 0}, map[string]Status{"o1": Cancelled}},
+ 		{"fill after cancel", []Event{buy, Cancel{"o1"}, Fill{"f1", "o1", 10}}, ErrOrderNotOpen, Account{100, 0}, map[string]Status{"o1": Cancelled}},
+diff --git a/sample/orders/orders.go b/sample/orders/orders.go
+index 5fcf82a..564b1a7 100644
+--- a/sample/orders/orders.go
++++ b/sample/orders/orders.go
+@@ -110,5 +110,6 @@ var (
+ 	ErrUnknownOrder      = errors.New("unknown order id")
+ 	ErrOrderNotOpen      = errors.New("order is not open")
+ 	ErrInsufficientFunds = errors.New("insufficient funds")
+-	ErrFillQuantity      = errors.New("fill quantity must equal the remaining quantity")
++	ErrFillQuantity      = errors.New("fill quantity exceeds the remaining quantity")
++	ErrDuplicateFill     = errors.New("duplicate fill id")
+ )

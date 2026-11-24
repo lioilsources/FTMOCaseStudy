@@ -1,0 +1,6 @@
+name: bad-duplicate-fill
+kind: bad
+description: Partial fills that apply the same fill id twice when the venue resends an execution report.
+expect:
+  verdict: FAIL
+  fires: invariants

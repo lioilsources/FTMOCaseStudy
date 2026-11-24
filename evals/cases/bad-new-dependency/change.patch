@@ -1,0 +1,11 @@
+diff --git a/go.mod b/go.mod
+--- a/go.mod
++++ b/go.mod
+@@ -3,6 +3,7 @@ module github.com/lioilsources/factory-gate
+ go 1.25.0
+ 
+ require (
++	example.com/fastdecimal v1.4.2
+ 	gopkg.in/yaml.v3 v3.0.1
+ 	pgregory.net/rapid v1.3.0
+ )

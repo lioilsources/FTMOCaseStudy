@@ -5,6 +5,7 @@
 //	gate loop   --spec <file> --base <ref> [--max-attempts N] [--context spec-only|spec+invariants]
 //	            [--record <dir> | --replay <dir>] [--stream]
 //	gate doctor
+//	gate eval   [--base main] [--only <case>]
 //
 // Exit codes of run: 0 PASS, 1 FAIL, 2 ESCALATE, 3 internal error. Advisory mode exits 0.
 package main
@@ -23,6 +24,7 @@ const usageText = `usage:
   gate loop   --spec <file> --base <ref> [--max-attempts N] [--context spec-only|spec+invariants] [--record <dir> | --replay <dir>] [--stream]
   gate doctor
   gate runs   [--dir demo/recorded]
+  gate eval   [--base main] [--only <case>]
   gate version`
 
 func main() {
@@ -40,6 +42,8 @@ func main() {
 		os.Exit(cmdDoctor(args))
 	case "runs":
 		os.Exit(cmdRuns(args))
+	case "eval":
+		os.Exit(cmdEval(args))
 	case "version":
 		fmt.Println(gate.Version())
 	default:

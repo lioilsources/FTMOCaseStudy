@@ -1,0 +1,11 @@
+name: bad-reserve-release
+kind: bad
+description: Partial fills where cancel releases the reservation of the whole order, not of the unfilled part, so the reservation goes negative.
+expect:
+  verdict: FAIL
+  fires: invariants
+known_miss: >-
+  200 generated cases with seed 1 do not find it: the bug needs a partial fill and then a
+  cancel of the same buy order, and the generator rarely produces both. With 500 cases and seed 1 the invariants find
+  it, and with 5000 cases seeds 1 to 3 all find it. The check count in gate.yaml is a cost and coverage trade-off owned by
+  a human; it is not raised to fit this case.

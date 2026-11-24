@@ -1,0 +1,6 @@
+name: good-docs-only
+kind: good
+description: A new glossary under docs/, judged without a spec.
+spec: ""
+expect:
+  verdict: PASS
