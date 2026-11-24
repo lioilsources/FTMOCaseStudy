@@ -75,7 +75,7 @@ A check is listed in `gate.yaml` only once it exists, so nothing is silently ski
 
 | Role | Model | Where it ran | State |
 | --- | --- | --- | --- |
-| building this repository | Claude Code (Claude Opus) | Anthropic | done through Phase 4 |
+| building this repository | Claude Opus 5.5 (Claude Code) | hosted | done through Phase 4 |
 | implementer | `qwen3-coder`, open weights | own L40S GPU host, `completion` adapter, spec-only context | built |
 | test author | `bench-qwen36`, a different model | own GPU host | configured, not built |
 | planner, advisory reviewer | | | not built; the next roles |
